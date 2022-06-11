@@ -1,0 +1,171 @@
+Definitions 
+-----------
+
+API: Telling program to run in an application
+-(A)pplication
+-(P)rogramming
+-(I)nterface
+-API is telling a program to run 
+
+End Point: Where an application/Interface is stored
+
+API Mashup: API from other API's
+
+Web Service: API that uses the internet
+
+HTTP: HyperText Transfer Protocol
+
+Idempotence: Safe to repeat
+
+REST: Representation State Transfer
+
+SOAP: Simple Object Access Protocol 
+
+Stateless: Not knowing the request coming in before it comes in 
+
+
+API Notes 
+---------
+
+-API's exist when you can tell (using an interface) a program (P) to run inside of an (A)pplication
+-Useful b/c
+	- Can use without documentation
+	- Platform independent (can use on any device that can reach interface)
+	- Upgrade Safe
+-3 Objects in an API transaction
+ 1. Request for completion of a task
+ 2. Program running to complete said task
+ 3. Response from program
+
+-API Example: Searching Tuna on Google's search engine
+1. User makes request using Google search page(Interface) for tuna (query) 
+2. Google's server runs the earch program using the tuna query
+3. Google returns the webpage with all of the results of the search to the user
+
+-All web services are API's, but not all API's are web services 
+-Use JSON,XML,REST, & SOAP for transferring data over the internet
+
+
+HTTP Notes 
+----------
+4 Parts to a HTTP Request and Response
+ 1. Start Line - Mandatory
+ 2. Headers - Optional
+ 3. Blank Line - Optional
+ 4. Body - Optional
+
+Request Side
+-Start Line: Uses Version 1.1, Usually the method being called
+-Header: Host(URL)/Security token, as well as properties about data
+-Blank Line: Nothing
+-Body: Depends on what is being sent
+
+Response Side
+-Start Line: Status Codes (Like 200 OK)
+-Header: Cookies, file size, etc.
+-Blank Line: Nothing
+-Body: Depends on what is being sent
+
+Start Line- Request Side
+-Called Start/Request Line
+Contains
+	HTTP Version(1.1)
+	Method(usually GET,POST,PUT,DELETE, can be something else)
+	API Program Folder Location
+	Parameters
+Formated as: "Method APIPR.F+Parameter HTTPVer.
+Example: "GET /search?q=tune HTTP/1.1"
+
+Start Line- Response Side
+-Called Start,Response, or Status Line
+-Contains
+	HTTP Version(1.1)
+	Status Code
+-Formatted as: "HTTPVer. Status Code"
+-Example: HTTP/1.1 200"
+
+Status Codes:
+-1XX: Informational Response (Like request recieved; 100 Continue)
+-2XX: Success (200 OK)
+-3XX: Redirection (301 Moved Permantently)
+-4XX: Client Error (404 Not found)
+-5XX: Service Error (504 Timeout)
+
+Common Methods:
+-GET: Read (Idempotent)
+-POST: Create (Not Idempotent)
+-PUT: Update (Idempotent)
+-DELETE: Delete (Idempotent)
+
+Headers: Give properties to a program
+Examples of Headers:
+-Accept-Language: What language to use
+-Authorization: Authentication Credentials(Valid, etc.)
+-Content-type: What form content will be sent in 
+
+-Blank Line: Separates headers from body
+
+Body:
+-Contains content sent to/from API
+-Commonly use JSON & XML to send and receive data
+-Header line "content-type" determines the type being used
+
+-HTTP uses cookies to track data
+-Coookies are not executable, lines of text/data
+-Applications use session id(cookie) to store data 
+
+
+Statelessness
+------
+-In HTTP, the state will be the web request and response
+-HTTP Stateless: Request is unknown before it comes in 
+-HTTP is stateless by default
+-The methods SOAP and REST are also stateless
+-Example of Stateful transfer: 2 computer who know each other who know what is being sent & received
+-- Like knowing who is calling you on a telephone
+
+
+HTTP Infrastructure
+-------------------
+-Application
+-Client
+-Initial Receiver
+-Server
+-Client-Server Connection
+-Memory
+
+-Benefits of Stateless Infrastructure
+--Scalability
+--Resilience(How much or little it crashes)
+--Less Memory usage
+
+XML
+---
+-Extensible Markup Language
+-Content type used in HTTP
+-Actual XML code is in the body
+-Uses "<>" tags
+
+
+JSON
+----
+-JavaScript Object Orientation
+-Holds data
+-Content-type: application/json
+-Uses "key": "value" pairing ("Size": "Small")
+-Starts with Data Object
+Example:
+{"Pizza" : [
+	{"Size": "Small, "Toppings": ["Onion", "Mushroom"]
+	}
+]
+}
+-Lightweight and Serialized
+-Used much more often than XML, and is the primary language used in Data transference
+
+
+
+
+
+
+
