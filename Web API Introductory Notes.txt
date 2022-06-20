@@ -163,6 +163,102 @@ Example:
 -Lightweight and Serialized
 -Used much more often than XML, and is the primary language used in Data transference
 
+SOAP
+----
+-Simple Object Access Protocol
+-Uses WSDL(Web Services Description Languag)
+-Uses POST method for every request
+-Not commonly used anymore
+
+HTTP Request using SOAP:
+Start Line: POST WSDL HTTP Ver.
+Header Line: content-type: text/xml
+Blank Line
+Body: XML envelope using XML
+
+
+REST
+----
+-Representational State Transfer
+-Uses Method(CRUD) in start line
+-Uses JSON to send data
+-No rules
+-Used to complete Web Service using HTTP
+
+HTTP Request using REST:
+-Start Line: All methods
+-Header Line: All headers
+-Blank Line
+Body: Any type
+
+Security Types & Needs
+----------------------
+-No Auth(entication): Doesn't need anything (Example: Google search)
+-Basic Auth(entication): Needs authentication (Example: Logging into email)
+-Bearer Token: Needs Authorization
+-OAuth(orization): Needs Authentication and Authorization (Example: Waze)
+-2FA: Needs Authentication (High Security)
+
+
+Apps
+----
+3 Types of Apps
+-Native
+-Web 
+-Hybrid
+
+-Native: Runs on Operating System
+--OS: Messenger between user & hardware
+--OS has API's that apps can access( like vibration, touch screen, camera)
+---All low level APIS
+--Native Apps have to be os-locked
+-Best @: Quality, speed, devices Access
+
+-Web App: App is stores in browser, which calls API's
+--Made in HTML
+--Limited ability for API calling
+-Example: Youtube
+-Best @: Cost 
+
+-Hybrid: hybrid of both
+1. Native and web app talk to each other & call APIs
+2. Web app in browser
+--App calls browser, browser --> middleware, middleware -> API @ OS
+-Best @: Store availability, devicess access(ok)
+
+
+OAuth
+-----
+-Allows 3rd Party Access
+-Limited(authorized) access to a web servce
+-Introduces an authorization layer
+--Gives access token instead of login credentials to a 3rd party
+
+Roles in OAuth:
+-Resource Owner
+-Resource Server
+-Client/Application: 3rd Party
+-Authorization Server: Provides authentication token 
+
+Protocol Flow:
+1. Client puts in Authorization Request to Resource Owner
+2. Resource Owner provides Authorization Grant to Client
+3. Client puts in Authorization Grant (2) to Authorization Server
+4. Authorization Server provides Access Token to Client
+5. Client puts in Access Token to Resource Server
+6. Resource Server provides access to protected resource to Client 
+
+Authorization Grant Types:
+-Authorization Code
+-Implicit
+-Resource Owner
+-Client Credentials
+
+-AT & RT are in string format 
+-Access token gives access to resource
+-refresh token gives another access token
+--Must last longer than AT
+
 
 
 
