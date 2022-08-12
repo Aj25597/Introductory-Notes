@@ -1,0 +1,23 @@
+Definitions
+-----------
+
+-Route: Location where the request goes
+
+-Method: GET, POST, UPDATE, DELETE that follows REST specification
+
+-Handler: Logic in the code
+
+-Port: Communication Endpoint; where user can access API locally
+
+
+Use HTTP protocol over the internet to connect to services
+
+Update in Crud - Patch in NodeJS 
+
+Middleware Pipeline: Acts like a queue; stacks a number of requests 
+to be processed one by one
+
+Express: Translates objects into readable objects
+helper method
+Method + URL = Route; Express handles routes
+REST: Resources to Routes

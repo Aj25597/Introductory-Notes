@@ -1,0 +1,151 @@
+Chapter 1
+------------
+
+Spring Boot + Core Features
+-Made to reduce burden of developing java web app 
+-Spring boot between developer and framework, all in Spring ecosystem
+-Notable Features:
+	-Fast Bootstrapping: Fast start up experrience; can make application by specifying dependencies
+	-Autoconfig: Automatically configures bare minimum components of application
+	-Opinionated: Automatically configures components to start a spring application
+	-Standalone: Have an embedded web server
+	-Production Ready: Has features to produce out of the box
+
+Components
+-spring-boot: Primary component that provides support for other components
+	-Have SpringApplication class
+-spring-boot-autoconfigure: Provided support for automatic config of an application
+-spring-boot-starters:  Set of prepackaged dependency descriptors for convencience
+-spring-boot-CLI: Command line utility that compiles and runs groovy. Can watch for file changes, really useful
+-spring-boot-actuator: Provides actuator endpoints to interact with, monitor, and audit application
+	-Managed through JMX or HTTP endpoints
+-spring-boot-actuator-autoconfigure: Provides support to auto configure endpoints based on classpath
+-spring-boot-test: Contains information to write test cases
+-spring-boot-test-autoconfigure: Automatically configures test cases
+-spring-boot-loader: Allows application to be packaged as a JAR file, so it can run by itself. Used with maven or Gradle plugin
+-spring-boot-devtools: Developer toolkit for smooth experience
+
+-Uses Apache Maven as build system 
+
+-Lombok:ibrary that auto generates constructor, getter, setter, toString, based on annotation in POJO class.
+
+Project Structure
+------------------
+
+-Pom.xml file: Contains dependencies for project 
+-Maven wrapper file: Allows the project to build without installing Maven locally
+-Package Structure: Contains source and test java files. 
+-Resources: maintains artifacts and properties file
+
+Segments of Pom.xml file:
+-spring-boot-starter-parent: Parent dependency for all dependencies. Special type of starter dependency. Helps in dependency management.
+-Also has starter dependencies declared
+	- starter dependecy make development easier. 
+
+Annotations in Springboot:
+-@EnableAutoConfiguration- Provides support for spring boot to autoconfigure application based on dependencies
+-@ComponentScan- Provides support to scan pacakages in application. Managues all suppackages and their lifecycle. Only scans a root and its subpackages
+-@Springbootconfiguration- Shows that the class has the spring boot config. 
+ 
+-The main class has to be in the root package
+
+When run is executed:
+-Instance of ApplicationContext based on libraries in classpath is created
+-A CommandLinePropertySource is regiestered in order to expose command line arguments as a property
+-Refreshes ApplicationContext made in 1st step to load all singleton beans
+-Triggers ApplicationRunners and CommandRunners in application
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Chapter 7
+----------
+
+REST API: API following the constraints of REST "architectural style"
+-Client request a resource
+-server provides a representation of state of requested resource to client
+-can be delivered in various formats; JSON most common
+
+
+-Spring Controller: Contains endponits that accepts the client requests; Might also use the services to generate response.
+Wraps the response in a model to share
+
+-REST Controller: similar to Spring controller, but binds response to the HTTP Protocol body and directly shares.
+
+
+The Communication Flow Diagram of a REST API
+---------------------------------------------
+
+- API client calls on a REST endpoint; handled by the REST controller
+-Controller uses service layer to process request
+-Service layer uses the repository to talk to database
+-Response from repository/database is handled by service layer and
+forwarded to the controller
+-Controller may process some more, and then provides final response to API client
+
+
+Handling Exceptions in API
+---------------------------
+
+-Error responses should be meaningful and be user friendly
+-Not dealing with errors can result in security flaws, and errors won't be user friendly
+-Should also provide the proper error code, not the standard server error code
+-When designing API, should identify possible errors in applications, and define custom exceptions to catch those errors 
+
+Testing a REST API
+-------------------
+-Spring MVC provides testing framerwork w/o an actual server 
+-More dtails of MockMVC @ mng.bz/do5D
+
+Documenting a REST API with OpenAPI
+------------------------------------
+-Open API specification procides an approach to document APIS so that consumers can find and use API's without trouble
+-Springdoc-openapi library automatically creates API documentation by assuming what everything does
+-springdoc-openapi-ui provides a connection between spring boot and Swagger UI 
+
+
+Implementing versioning in REST API
+------------------------------------
+
+Techniques:
+-URI Versioning: Using a version number in the URI
+-Request parameter versioning: using an HTTP req parameter to identify version
+-Custom HTTP header versioning: Using HTTP request header to distinguish the version
+-Media type Versioning: Using the "accept header request" header to request the version
+
+
+
+-URI Version change: simply adding "v1" to the URL to indicate version 
+- Request Parameter versioning: adding a (params = "Version =" to the @ in order to differentiate version
+-HTTP header version: Using a custom HTTP header in HTTP request(adding (headers = "X-API-Version= ") to Mapping
+-Media Type versioning: Known as Content Negotiation or Accept Header versioning
+	Leverages the built in Accept Header and uses "produces" attribute to declare content type, and content type specifies version
+
+-None of these versions are perfect; choosing version is a design choice of designer 
+
+Securing an API
+---------------
+-Most basic way is to use HTTP basic authentication to secure API
+	- Uses user and pass
+	-Not great because it user and pass can be exposed easily
+	-Both client and server act as password keeper, so more chance of leaks 
+-Preferred way is JWT, which uses Bearer Token Approach
+	- Client asks for and receives access toekn in JSON Web Token(JWT) format
+	- Client request API using Bearer token 
+	-API validates bearer token w/ authorization serevr
+	- If valid, returns response to client
+
+-Use Keycloak as authorization serevr 
+
+ 
