@@ -1,0 +1,28 @@
+Section 3 
+------------
+
+Factors to consider when choosing AWS Region:
+- Compliance with govt & legal reqs( Datat doesn't leave country)
+- Latency: Proximity to Customers
+- Available Services in a region: Every feature in every region
+- Pricing( varies from region to region) 
+
+AWS Availability Zones 
+------------------------
+ - Every region has 2-6(usually 3) avaiability zones (AZ)
+ - Ex: Sydney AWS region: ap-southeast-2
+	- ap-southeast-2a,2b,2c(3 total)
+ - Each AZ has >=1 discrete data centers
+	- Each DDC has redundant power, networking, & connectivity
+	- Ex: 2a has 1 DDC, 2b has 2 DDC, 2b has 3 DDC
+ - AWS doesn't disclose this info
+ - Separate from each other
+	- Helps isolate from disaster(if 2b goes down, 2a,c are fine)
+ - Connected with high-bandwith, ultra-low latency linking
+ - These 3 AZ's form a region 
+
+AWS Points of Presence (Edge Location)
+--------------------------------------- 
+
+ - >= 200 PoP
+ - Help deliver content to end user 
