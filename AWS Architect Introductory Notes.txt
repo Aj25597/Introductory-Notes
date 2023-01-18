@@ -26,3 +26,109 @@ AWS Points of Presence (Edge Location)
 
  - >= 200 PoP
  - Help deliver content to end user 
+ 
+ 
+IAM
+------
+ - IAM: Identity and Access Management; Global Service
+ - Root acct made by default, don't use or share 
+ - Users = ppl within org, can be grouped
+ - Groups can only contain users, not other groups
+ - All users don't have to be in group, and user can be in multiple groups
+ - Permissions:
+	- Users/Groups can be assigned Policies(JSON doc)
+	- Don't allow every user to use everything
+ 	- Policy describes user permissions
+	- Follow the Least Privilege principle: Don't give more permissions than a user needs
+
+IAM Policies
+--------------
+ - If a policy is applied to a group, all users in the group get that policy
+ - An inline policy: Policy attached to a user 
+ - If a user is in two groups, they will get policies from both groups 
+ - Policy Structure
+	- Version:
+	- ID: Policy Identifies(optional)
+	- Statement: >=1 individual statements(required)
+	- Statements which consist of 
+		- SID: Statement Identifier
+		- Effect: Whether statements allows or denies access
+		- Principal: account/user/role where policy applies
+		- Action: list of actions this policy allows or denies
+		- Resource: list of resources to which action applies
+		- Condition: Condisition for when the policy is in effect(optional)
+IAM Password Policy
+---------------------
+ - Can set up a password policy with
+	- minimum length
+	- Specific character types
+ - Can allow all users to change password & change after a certain amount of time
+ - Prevent re-use of old passwords
+ - MFA: Multi Factor Authentication
+ - Using a password and a security device to allow access to a resource
+ - Even if password is stolen, hacker can't access security device 
+MFA options
+ - Virtual MFA device(google authenticator)
+	- Support for multiple tokens on 1 device
+ - Universal 2nd Factor(U2F) security key (YubiKey)
+	- Support for multiple users using a single key 
+ - Hardware Key Fob MFA device
+
+ - 3 ways to access AWs
+	- Management Console
+	- CLI: Command Line Interface: protected by access keys
+	- AWS SDK : for code: protected by access keys
+ - access keys are generated through console
+ - are secret, not shared, and managed by users
+ - access key ID ~= username, secret access key ~= password
+
+AWS CLI & SDK
+---------------
+ - tool that lets you use AWS using a shell
+ - enables access to Public APIS within AWS
+ - Can make scripts to manage resources
+ - open source, can use instead of management console
+ - AWS Software Development Kit(SDK)
+ - Language-Specific
+ - Enables management and access of AWS services
+ - Embedded in a application
+ - Supports various languages, Mobile SKD< and IoT Devices
+ - Example: CLI is build on SDK for python
+
+AWS Cloudshell
+---------------
+ - Working shell within AWS 
+ - has environment, can make files, etc in the shell 
+ - can also up and download files on AWS
+
+IAM Roles for Services
+------------------------
+ - Some aws services will perform actions for user
+ - AWS services will get permissions with IAM 
+ - Create IAM role, and EC2 Instance. When Instance tries to access info from AWS, it will use the IAM role to retrieve info
+ - Common Roles: EC2 instance roles, Lambda fun roles, Roles for CloudFormation
+ 
+IAM Security Tools
+-------------------
+ - IAM Credentials Report(account-level): Report that lists all account users and status
+ - Iam Access Advisor(user-level): Shows permissions user has and when they were used
+
+
+IAM Guidelines
+------------------
+ - Don't use root acct other than setting up
+ - 1 physical user = 1 AWS user
+ - Users can go in groups with group permissions
+ - Use strong password, and MFA 
+ - Use roles for AWS services
+ - Make access keys for programmitc acces like cli or shell
+ - Audit permissions, remove unused perms
+ - don't share access keys
+
+IAM Summary 
+------------
+ - Policies: JSON doc that outlines permissions for users
+ - Roles = services, groups = users
+ - programmatic access given access keys
+ - Audit for permissions
+ 
