@@ -132,3 +132,192 @@ IAM Summary
  - programmatic access given access keys
  - Audit for permissions
  
+ 
+EC2
+----
+ - Most popular AWS offering
+ - Elastic Compute Cloud: Infrastructure as a Service
+ - Can Rent virtual machines(Ec2), store data on a virtual drive(EBS)
+, distribute load across machines(ELB), Scale services using an auto-scaling group(ASG)
+ - EC2 lets u rent the cloud on demand
+ - Can choose linux, Windows, or MAC OSX for OS on EC2
+ - How much CPU power, RAM, and how much space you want
+	-Network Attached(EBS & EFS)
+ 	- Hardware(Ec2 Instance Store)
+ - Network card:Speed and public IP 
+ - Firewall Rules: security group
+ - Bootstrap script(configure at first launch):Ec2 User Data
+ - Can use EC2 User data script to bootstrap instances
+ - Bootstrapping: launching commands when machine starts
+ - Runs once at the first start
+ - Used to automate tasks such as updates, installing software, getting common fieles,
+ - EC2 Data script runs on root user
+
+ - Example: t2.micro
+	- 1 vCPU 1GB, EBS only storage, low to moderate network performance, 
+ 
+EC2 Instance Types
+-----------------------
+ - 7 Different types of EC2 Instances
+ - Naming convention
+	m: instance class
+	5: generation
+	2xlarge: size within the instance class
+ - creates m5.2xlarge
+ - General Purpose: Good for diversity of workload such as server or repo
+ 	 - balance between computing, memory, and networking
+ - Compute Optimized: Greate for computer-intensive tasks that require high performance processors
+	- Like heavy workloads, high performance servers or computing, machine learning or scientific modeling, game server
+ - Memory Optimized: Fast performance for workloads with large data sets in memory
+	- Realtime processing of unstructured data, high performance
+ - Storage Optimized: For tasks that require high,sequential read and write access to large data sets on local storage 
+
+Introduction to Security Groups
+---------------------------------
+ - Fundamental to network security in AWS
+ - Control how traffic is allowed in and out
+ - only contain allow rules, can reference by IP or by security group
+ -EX: Create a security group around EC2 instance that allows inbound traffic and outbound traffic 
+ - act as a firewall
+ - Regulate: Access to ports, authorized IP Ranges, control of inbound network(other to instance) and outbound (instance to other)
+ - Can be attached to multiple instances
+ - Instance can have multiple sec groups
+ - Locked down to a region 
+ - Lives outside of EC2, so if traffic is blocked EC2 won't know it exists
+ - Maintain 1 sec group for SSH access 
+ - if the application times out, it's a sec group issue
+ - If connection is refused, then sec group worked, and EC2 was not launched 
+ - default: no inbound, all outbound 
+ - Can use security groups to communicate with diff EC2's because if the sec group authorizes a diff sec group that a diff instance has, it will allow traffic 
+
+Ports to Know
+-------------
+ - 22: SSH(Secure Shell) log into Linux instance
+ - 21:FTP(File transfter Protocol - Upload files into file share
+ - 22 = SFTP (Secure File Transfer Protocol) - Upload files via SSH
+ - 80 = HTTP - Access unsecured website
+ - 443 - HTTPS - access secured website
+ - 2289 -RDP (Remote Desktop Protocol) Log into windows instance 
+
+ - If there is a timeout when you try to connect to your EC2 instance, the cause is always the security group rules
+ 
+
+Purchasing options 
+-------------------
+On Demand: coming and staying when we want: full price
+ - Reserved: Plan ahead, and if it's for a long time, maybe discount
+ - Savings plan: pay a certain amount per hour for a certain period, stay anywhere we want( can manipulate instance types)
+	Locked to a specific instance family and region
+	
+ - Dedicated Hosts: Book the entire server for yourself
+	Allows compliance and software license req meeting
+ - Dedicated Instance: Instance run on hardware for you; no control over instance placement
+ - Capacity Reservation: book a room for full price, but don't always use
+
+
+Spot Instances & Spot Fleet
+---------------
+ - A purchase option for EC2 Instances
+ - Put a max price you're willing to pay, and if the curr < max, then you can start the instance
+ - A spot instance can only be cancelled if it's open, active or disabled
+ - To terminate a spot instance, first cancel the request, then terminate the associated instance
+ - Spot fleet: Spot Instances and On-Demand Instances that allow you to get the spot instance with the lowest price
+
+Other Stuff
+-------------
+ - Don't use IAM key in Ec2 instance
+ - Instead, give instance the IAM role
+ - Services have to get an IAM role, like Ec2 Instance
+
+
+Private vs Public IP (IPv4)
+----------------------------------
+ - 2 types of Ip v4 and v6 
+ - v4 is more common
+ - Allows 3.7 Billion different addresses
+ - On a private network, all the computers within the private network can talk to each other
+ - With an internet gateway on a private network, you can access the internet
+ - Public Ip
+	Machine is on the internet
+	Unique across the whole web
+	Easy geo-location
+ - Private ip
+	Machine is identifiable only on private network
+	IP must be uniqe across the private network 
+	2 diff private networks can have the same IP
+	Machine connect to internet using NAT + internet gateway(proxy)
+	Only a specified range of IPs can be on private net
+ - Elastic Ip
+	a public Ipv4 that you own as long as you don't delete
+	Associated with 1 instance 
+	Can mask failure of a instance by remapping address to another instance
+	5 elastic IPs w/ acct
+	try to avoid- poor design
+	use random public IP and register DNS to it 
+ - Ec2 machine has a private Ip for internwal aws network, a public ip
+ - when ssh, can't use private ip have to use public
+ - public Ip can change  
+ 
+
+placement Groups
+-----------------
+ - Sometimes you want to control the EC2 instance placement strat, placement group allows that
+ - Specify by cluster
+	instances clustered into low-latency group in 1 AZ
+ - spread
+	spread instances across underlying hardware
+ - partition
+	spread instances across different partitions(on different sets of racks) within 1 AZ 
+	
+- Cluster
+	All EC2 instances on the same rack and same AZ(all on same hardware)
+	Pros: Great network(10gbps bandwith)
+	Con: If rack fails, all instances fail 
+	Use-Case: Big data job that needs to be completed fast or need extremely low latency 
+ - Spread:
+	All Instances are on different hardwares
+	Pros: Can span across AZ
+		 Reduced risk of them all failing
+	Cons: Limited to 8 instances per AZ per placement group
+	Use Case: Application that needs to max high availability
+			 Critical application where failures must be isolated
+ - Partition: Up to 7 partitions in different AZ, each partition has multiple Ec2 Instances
+	Each partition is a rack, so one partition is on 1 set of hardware
+	can be across multiple AZs in same region
+	Up to 100s of instances
+	Each partition has its own rack
+	A partition failure will result in some instances failing, but won't affect other partitions
+	Ec2 instances get access to partition info from metadata
+	Use case: When you have an application that is partition aware(HDFS, HBase, Cassandra, Apache Kafka)
+
+ENI - Elastic Network Interfaces
+----------------------------------
+ - Logical component in a VPC that represent a virtual network card
+ - ENI is attached to an EC2
+ - Each ENI has 
+	Primary private IPv4, >= 1 secondary IPv4
+	One Elastic IPv4 per private IPv4
+	1 Public Ipv4
+	>=1 sec group
+	a mac address
+ - Can create ENI independently and attach onto EC2 and can move them around 
+ - bound to an AZ
+ - allows failover 
+ - Creating your own ENI allows more control over network and 
+ 
+EC2 Hibernate
+--------------
+ - When we stop an instance, the data will be intact, but if its terminated, the ebs (data on disk) will be destroyed
+ - On start: Os boots, Ec2 User Data script runs, then OS boots up, App starts, and cache warms up 	
+ - Hibernate: in memory state is preserved, so instance boot is much faster 
+ - Under the hood: the ram State is written to a file in the root EBS volume, which must be encrypted 
+ - When Hibernation occurs: Instance stops. Ram is dumped onto EB. EC2 shut down
+ - WHen it starts back up: Ram is loaded from EBS, and starts up faster
+ - Use Case: Long-running processes, save RAM State, Services that take a long time to initialize 
+ - Supports lots of instance families
+ - Must be less than 150 GB
+ - Works for many OS, works for Root volume 
+ - Available for On-Demand, Reserved, and spot
+ - Can't be for more than 60 days 
+ - "uptime" tells you how long the instance has been running
+
