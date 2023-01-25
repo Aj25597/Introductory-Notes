@@ -320,4 +320,374 @@ EC2 Hibernate
  - Available for On-Demand, Reserved, and spot
  - Can't be for more than 60 days 
  - "uptime" tells you how long the instance has been running
+ 
+EBS Instance Storage
+-----------------------
+ - EBS (Elastic Block Store) Volume: Network drive that attaches to running instance 
+ - Allows instance to persist data after termination
+ - Bound to an AZ 
+ - Similar to "network USB Stick"
+ - Uses network to communicate to instance, could result in latency
+ - Can detach from 1 EC2 and attach to another EC2 
+ - To move a volume across, need to snapshot 
+ - Have a provisioned capacity beforehand 
+ - Delete on Termination attribute: Controls EBS behavior when EC2 is terminated
+	Default is the root EBS is deleted, and any other EBS attached are not deleted
+	Use case: preserve root volume when instance is terminated 
 
+EBS Snapshot
+----------------
+ - Backup of EBS at a pointin time
+ - Recommended to detach volume, not necessary
+ - Can copy snapshots across AZ or region
+ - Used to transfer data from one AZ to another
+ - Features:
+	EBS snapshot archive: Move to an archive teir that is 75% cheaper	
+	24-72 hours to restore archive
+	Recycle Bin: Retains deleted snapshots to recover after an accidental deletion
+	Retention from 1 day to 1 year
+	Fast Snapshot Restore(FSR): Forces full initialization of snapshot so there is no latency on the first use ($$$)
+	
+AMI 
+-----
+ - Amazon Machine Image
+ - Customization of EC2 Instance
+ 	Add own software, config, OS, etc
+	Faster boot/ config time b/c software is pre-packaged in AMI
+ - Built for a specific region and copied across region 
+ - Can launch EC2 from 
+	A public AMI(AWS made)
+	Personal AMI(make and maintain by yourself)
+	AWS marketplace ami(AMI someone else made and sold)
+Process:
+	Start Instance and customize it. Stop and test data integrity
+	Build ami(Also makes EBS snapshot). Launch instance from diff AMI.
+	Will essentially make a copy of an instance
+	AMI's allow programs to launch a lot faster as they provide templates for program building 
+
+EC2 Instance Store
+ - EBS volumes are good with "limited performance"
+ - EC2 Instance store is a high-performance hardware disk
+ - Better I/O performance
+ - Can lose storage if the instance is stopped(ephemeral)
+ - Good for buffer/ cache/ scratch data/ temporary content
+ - Risk of data loss if hardware fails
+ - Backup and Replication is use responsibility 
+
+EBS Volume types
+-------------------
+ 6  types
+ - gp2/3: General purpose SSD that balances price and peformance
+ - io1/2: Highest-performance SSd for mission-critical low-latency or high-throughput workloads
+ - St1(hdd): Low cost HDD volume designed for frequently access, throughput-intensive workloads
+ - sc 1(hdd): Lowest cost hdd for less frq access workload
+ - characterized in sie, throughput, IOPS(I/o Ops per sec(
+ - only gp2/3 and io1/2 can be used as boot volumes
+
+Volume Type Use cases
+General Purpose SSD
+	Cost effect storage, low latency
+	System boot columes, vir desktop,
+	1 GB - 16tb
+- gp3: Baseline of 3,000 IOPS and throughput of 125 mb/s
+	can independently set IOPS and throughput higher 
+- gp2: small that can burts IOPS to 3,000
+	size of volume and iops are linked, max 16,000 IOPS
+Provisioned IOPS( PIOPS) ssd
+ - critical business application with sustained IOPS or apps that need > 16,000 IOPS
+ - Great for database workloads
+ - io1/2 (4gb - 16tb)
+ - Max PIOPS: 64K for Nitro Ec2 Instance and 32K for other
+ - can increase PIOPS independently from storage size 
+ - io2 has greater durability and more IOPS per GB (at same price of io1)
+ - io2 Block  Express
+	Sub-ms latency
+	max 256K PIOPS with IOPS:Gb ratio of 1k:1
+ - Supports BS multiattach
+
+Hard Disk Drives(HDD)
+ - Can't be boot vlume 
+ - 125gb to 16tb
+ - throughput Optimized HDD (st1)
+ 	lots of data, data warehouse, log processing
+ 	max throughput 500mb
+Cold HDD (sc1)
+	Infreq accessed data 
+	Where lowest cost is important 
+
+EBS multi-attach
+-------------------
+ - attach same ebs volume to multiple ec2 instances in same AZ
+ - Each instance has full r&w perm to high performance volume
+ - Use case: Higher application availability in clustered linux applications
+	Applications must manage concurrent write operations
+  - Up to 16 ec2 instances at a time 
+ - Must use a file system thats cluster-aware
+
+EBS encryption
+----------------
+- WHen encrypted EBS is created,
+	Data is rest is encrypted inside volume
+	All data in flight(moving b/w instance and volume) is encrypted
+	All snapshots are encrypted
+	All volumes created from snapshot
+ - Encryption and decryption handled transparently
+ - Encryption has minimal impact on latency
+ - Encryption leverages keys from KMS
+ - Copying an unencrypted snapshot allows encryption
+
+EFS - Elastic File System
+-----------------------------
+ - Managed NFS(network file system) that can be mounted on many Ec2
+ - EFS works with EC2 instances in multi-AZ
+ - Highly available scalable, expensive, pay per use 
+ - Surround EFS with a sec group to access instances 
+ - Use cases: content management, web serving, data sharing, wordpress
+ - Uses NFSv4.1 Protocol
+ - uses sec group to control access to EFS
+ - only on Linux
+ - Encryption at rest using KMS
+ - Scales automatically pay per use 
+EFS scale
+	1000s of concurrent NFS clients, 10gb/s throughput
+	grow to petabyte scale network file system, automaticalls
+perfomrance mod
+	general purpose: latency sensitive use cases (web server)
+	Max I/O - higher latency, throughput, highly parallel(big data)
+
+Throughput mode
+	bursting (1tb = 50 mb/s + up to 100mb/s)
+	Provisioned: set throughput regardless of storage size  (1gb/s for 1tb storage)
+Storage classes
+------------------
+ standard for frq accessed files
+ infrequenst access(EFS-ia) cost to retrieve files, lower price to store 
+Availability:
+	Standard: Multi-AZ, great for pord
+	One Zone: One zone, great for dev, backup enabled by default, compatible with IA
+
+ - EFS' allows automatic creation of security groups so that two instances can connect and use the same file system
+
+EBS vs EFS
+----------------
+ - EBS volume goes to 1 instance(except multi-attach io1/2)
+	locked at AZ level 
+	gp2: IO increases if disk goes up
+	io1: can increase IOPS independently
+	To migrate an EBS volume: Take snapshot. Restore snapshot to another az
+	EBS backups use IO and shouldn't run when app is dealing with a lot of traffic
+ - Root EBS volumes of instances get terminated by default if EC2 instance terminates
+
+-EFS can be attached to many instances across AZ 
+- share website files
+- only for linux 
+- higher price point than ebs
+- can use less common access storage for cheaper storage
+
+Scalability & High Availability
+------------------------------------
+ - Scalability: App can handle greater loads by adapting
+ - 2 kinds: Vertical and horizontal(elasticity)
+
+Vert Scalability
+ - Increase size of instance 
+	ex: making t2.micro into t2.large
+	Commong for non-distributed systems, like database 
+	hardware limited
+Hor Scalability
+ - Increase # of systems/instances for app
+ 	implies distributed systems(web app, modern app)
+	Easy to horizontally scale 
+High Availability
+ - running app in >= 2 data centers(AZ)
+ - goal is to survive data center loss 
+ -  can be passive or active 
+
+load balancing
+-------------------
+ - Server that forwards traffic to multiple servers downstream 
+ - Users connect to load balancer, which then connects user to a instance 
+ - Why?
+	Spread load across multiple downstream instances
+	expose only a single point of access(DNS) to app
+	seamlessly handle failures of downstream instances
+	Can do regular health checks
+	High availability across zones
+	separate public and private traffic 
+ - Elastic Load balancer is managed load balancer
+	- Provides a static DNS	
+	AWS works it and says it will work, takes care of everything
+ - cost less than if you set up one 
+ - integrated in many services 
+
+ - Health Checks: Crucial for load balancer
+	Allow lb to know if instance is working for traffic 
+	Done on a port and route 
+	If not 200(ok) instance down = load balancer won't send traffic 
+ - 4 types of load balancer
+	Classic (CLB) - don't use (deprecated)
+	Application Load Balancer(ALB) - HTTP, HTTPS, Websocket
+	Network Load Balancer(NLB) - TCP, TLS(Secure TCP), UDP
+	Gateway Load Balancer(GLB) - Operates at 3 layers - IP protocol
+ - Some are internal or external
+
+ - User can access load balancer from anywhere, but the instance connected only allows Load balancer to send traffic
+
+Application Load Balancer
+--------------------------
+ - Only provides DNS
+ - Layer 7 (HTTP)
+ - Load Balancing to multiple HTTP applications across machines(target groups)
+ - Load balancing to multiple applications on the same machine (containers)
+ - Support for HTTP2/ and WebSocket
+ - When traffic goes from alb to ec2, the ip address EC2 gets is the alb's. To get client Ip, ALB adds a header called "x-forwarded-for" w/ client Ip address.
+ - Supports redirects( HTTP / HTTPS)
+ - Routing tables to different target groups
+	Routing based on path in URL (example.com/users & example.com/posts)
+	Routing based on hostname in URL (one.example.com & others.example.com)
+	Routing based on Query String, Headers( example.com/user?id=123
+	ALB is good for micro services and container-based apps
+	Port mapping allows redirection to dynamic port
+	Would need multiple CLB per apps vs 1 ALB for multiple apps   
+ALB Target Groups
+ - EC2 Instances (managed by a auto scaling group) - HTTP
+ - ECS tasks(managed by ECS itself) HTTP
+ - Lambda Functions - HTTP req translated into JSON event 
+ - IP addr - must be private
+ - ALB can route to multiple target groups
+ - Health check at target group level 
+ - Get  a fixed hostname 
+ - App server doesn't see client IP 
+ - Client talks to ALB which does a connection termination, and the ALB then talks to the Ec2 Instance 
+ - The Load balancer will also allow you to make custom paths to various different urls 
+
+Network Load Balancer
+ - Provides both Static DNS and IP
+ - Layer 4: Forwards TCP & UDP traffic to instances
+ - millions of req per second
+ - less latency ~100ms vs 400 for alb
+ - 1 static IP per AZ, supports Elastic IP 
+ - Used for extreme perf, TCP or udp traffic
+ - Target Groups: Ec2 instances, private Ips, ALB
+ - Health checks support TCP HTTP and HTTPS protocols
+ - When you use a NLB, you use the Sec groups of the instances to determine whether or not traffic is allowed
+ - ALB uses its own Sec group 
+
+Gateway Load Balancer
+ - Deploy, scale, and manage fleet of 3rd pard appliances in AWS
+ - EX: firewall
+ - steps: user traffic goes through GLB, which then balances load amongst sec apps
+ 	if sec apps approve, it goes back to glb which then sends the traffic to the destination
+	sec group drops if not approved
+ - layer 3(network layer) IP pakets
+Features
+ - Transparent Netowkr Gateway - 1 entry/exit for all traffic 
+ - Load Balancer - distributes traffic to virtual applicanes
+ - Uses GENEVE protocol on 6081
+ Target Groups
+	Ec2 Instances
+	Private IP Addresses 
+	
+Sticky Sessions( Session affinity)
+ - possible to implement stickiness so that the same client goes to same instance behind a load balancer
+ - for CLB and ALB 
+ - Cookie is used for stickiness with an expiration date you control 
+ - Use case: make sure user doesn't lose session data
+ - Can bring imbalance to load 
+Cookie names
+ - Application based cookies
+	Custom 
+		made by target
+		Can have any custom attributes
+		name specified individually for each target group
+	Application cookie
+		Generated by load balancer
+		Name is AWSALBAPP
+ - Duration based cookie 
+	Made by load balancer
+	AWSALB for alb AWSELB for CLB 
+	
+Cross Zone Load Balancing
+---------------------------------
+ - each load balancer distributes evenly across all registered instances in all AZ
+ - even if the traffic is not in the same AZ it can be distributed across 
+ - ALB 
+	Has enabled by default, but no charges for inter AZ data 
+ - NLB & GLB
+	Disabled by default, pay charges for inter AZ data
+ 
+SSL/TLS - Basics
+ - SSL certificate allows traffic between clients and load balancer to be encrypted in transit (in-flight encryption)
+ - SSl: secure sockets layer
+ - TLS: Transport Layer Security, newer
+ - TLS called SSL
+ - SSL certificates are issues by Certificate Authorities
+ - Certs have expiration date 
+ - LB uses an x.509 cert (TLS server certificate
+ 
+SSL - Server Name Indication
+ - SNI solves problem of multiple SSL certs on one web server
+ - Req cline to indicate hostname of target server. SSL will return correct cert or default one
+ - only works for alb and nlb 
+ - CLB
+	Only 1 SSL cert
+ - ALB & NLB 
+	Supports multiple listeners to mult SSL certs
+	Uses SNI to make it work 
+ - add listener with H
+	
+Connection Draining
+ - Connection Draining for CLB and deregistration delay for ALB & NLB
+ - Time to complete "in-flight' requests while instance is unhealthy
+ - stops sending new requests to EC2 which is deregistering/ shutting down 
+ between 1-3600 sec(def 300)
+ cann be disabled
+set to low val if req are short 
+
+Auto Scaling Group-
+---------------------------
+- load on website can change ove rtime
+- can make and get rid of servers very quickly
+- can make an ASG to scale out(add Ec2) or Scale in (remove EC2) to match an inc/dec load
+	also have a minimum and max # of Ec2's running 
+	Automatically register new instances to load balancer
+	free(pay for EC2 instances)
+ - have a min, desired, and max capacity
+Attributes
+ - A launch template	 
+	Ami + Instance type
+	EC2 User Data
+	EBS Volumes
+	Sec Group
+	SSH Key Pair
+	IAM roles 
+	Networkk + Subnet info 
+	Load Balancer info
+	Min/max/init size 
+	Scaling Policies
+Auto Scaling
+ - possible to scale an asg based on CloudWatch Alarms
+ - Alarm monitors a metric
+ - Based on alarm, can scale out or in 
+
+Scaling Policies
+Dynamic
+	Target Tracking
+		Simple and easy to set up(Want average ASG CPU to stay aroud 40% ex)
+	Simple/step caling
+		When a CloudWatch alarm is triggered, do x
+	Scheduled Actions
+		Anticipate scaling based on known usage patterns
+Predictive
+	Continuously foecase load and schedule scaling ahead
+	Predicting the future basically 
+	Uses ML to predict usage 
+Good metrics to scale on
+	CPU Utilization: Avg CPU utilization across instances
+	RequestCountPerTarget: making sure # of requests per ec2 instance is stable 
+	Avg Network in/out: 
+	Any custom CloudWatch metric
+Scaling cooldown
+	After an scaling activity occurs, there is a cooldown period
+	During cooldown, asg won't launch or terminate any instances to stabilize metrics
+	Use ready to use ami to reduce config time and make downtime less 
